@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signify.AI - Bridging Communication Gaps</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Preloader styles */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-dark);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .preloader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(108, 99, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Account button styles */
+        .account-btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 2px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            display: inline-block;
+            text-decoration: none;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .account-btn:hover {
+            color: var(--primary-color);
+            background-color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(108, 99, 255, 0.2);
+            text-decoration: none;
+        }
+        
+        .account-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(108, 99, 255, 0.15);
+        }
+        
+        .account-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: -1;
+            border-radius: 23px;
+        }
+        
+        .account-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        /* Animation styles */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .floating {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-text {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+        
+        .animate-text-delay {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards 0.3s;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* Stats Section Styles */
+        .stats-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--background-dark) 0%, var(--primary-color) 100%);
+            color: white;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            text-align: center;
+        }
+        
+        .stat-card {
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        /* Testimonials Section Styles */
+        .testimonials-section {
+            padding: 80px 0;
+            background-color: var(--background-light);
+            color: var(--text-dark);
+        }
+        
+        .testimonials-section h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            color: var(--text-dark);
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .testimonial-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .testimonial-content {
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        
+        .testimonial-content i {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .testimonial-content p {
+            font-style: italic;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--text-dark);
+        }
+        
+        /* Testimonial Author Styles */
+        .testimonial-author {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .testimonial-author img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+            padding: 2px;
+        }
+        
+        .author-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5px 0;
+        }
+        
+        .author-info h4 {
+            margin: 0;
+            color: var(--text-dark);
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            line-height: 1.3;
+        }
+        
+        .author-info .designation {
+            margin: 4px 0 2px;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .author-info .company {
+            margin: 0;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            line-height: 1.2;
+        }
+
+        @media (max-width: 1024px) {
+            .testimonials-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div class="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-brand">
+            <div class="logo-placeholder"></div>
+            <span class="brand-name">Signify<span>.AI</span></span>
+        </div>
+        <div class="nav-links">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#chat" class="nav-link">Chat Now</a>
+            <a href="#about" class="nav-link">About Us</a>
+            <a href="#use-cases" class="nav-link">Use Cases</a>
+            <a href="#contact" class="nav-link">Contact</a>
+            <a href="#" class="nav-link account-btn" id="accountBtn">Create Account</a>
+        </div>
+    </nav>
+
+    <section id="home" class="hero-section">
+        <div class="hero-content">
+            <h1 class="animate-text">Experience Communication Without Barriers</h1>
+            <p class="subheading animate-text-delay">Your AI companion that sees, understands, and responds to facial expressions, hand gestures, and eye movements.</p>
+            
+            <div class="hero-features">
+                <div class="feature-card floating">
+                    <div class="feature-icon">
+                        <i class="fas fa-smile"></i>
+                    </div>
+                    <h3>Facial Recognition</h3>
+                    <p>Detect and interpret emotions through facial expressions</p>
+                </div>
+                
+                <div class="feature-card floating" style="animation-delay: 0.2s">
+                    <div class="feature-icon">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                    <h3>Gesture Control</h3>
+                    <p>Understand hand movements and sign language</p>
+                </div>
+                
+                <div class="feature-card floating" style="animation-delay: 0.4s">
+                    <div class="feature-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Eye Tracking</h3>
+                    <p>Follow eye movements to enhance communication</p>
+                </div>
+            </div>
+            
+            <div class="hero-cta">
+                <a href="#chat" class="cta-button">Get Started</a>
+                <a href="#about" class="cta-button secondary">Learn More</a>
+            </div>
+        </div>
+        
+        <div class="hero-image floating" style="animation-delay: 0.6s">
+            <img src="https://images.unsplash.com/photo-1617791160505-6f00504e3519?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="Person demonstrating hand gestures to camera" class="main-image">
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="stats-section">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="10000">0</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="95">0</div>
+                    <div class="stat-label">Accuracy Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="50">0</div>
+                    <div class="stat-label">Countries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="1000">0</div>
+                    <div class="stat-label">Testimonials</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h2>What Our Users Say</h2>
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"Signify.AI has revolutionized how I communicate in virtual meetings. The facial expression recognition is incredibly accurate, helping me understand my team's reactions in real-time. It's like having a superpower in remote collaboration!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Priya Sharma">
+                        <div class="author-info">
+                            <h4>Priya Sharma</h4>
+                            <p class="designation">Senior Software Engineer</p>
+                            <p class="company">TechCorp India</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"As a special education teacher, I've seen firsthand how Signify.AI breaks down communication barriers. My students who face hearing challenges now participate more actively in class discussions. The gesture recognition is a blessing!"</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Rajesh Kumar">
+                        <div class="author-info">
+                            <h4>Rajesh Kumar</h4>
+                            <p class="designation">Special Education Teacher</p>
+                            <p class="company">Delhi Public School</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <i class="fas fa-quote-left"></i>
+                        <p>"In healthcare, every second counts. Signify.AI's ability to interpret facial expressions and gestures has transformed patient care. It's particularly valuable in emergency situations where quick, accurate communication is crucial."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=100&h=100&q=80" alt="Ananya Patel">
+                        <div class="author-info">
+                            <h4>Ananya Patel</h4>
+                            <p class="designation">Senior Healthcare Professional</p>
+                            <p class="company">Apollo Hospitals</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <h2>About Us</h2>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1552581234-26160f608093?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80" alt="About Signify.AI">
+                </div>
+                
+                <div class="about-text">
+                    <p class="about-intro">
+                        Signify.AI is an innovative platform designed to serve as a companion for Deaf and Mute individuals, 
+                        using advanced AI to bridge communication gaps with empathy and intelligence.
+                    </p>
+                    <p class="about-description">
+                        Our system detects and understands facial expressions, hand gestures, and eye movements to interpret 
+                        the user's mood and intent. Based on this analysis, it responds through text-based or voice-based 
+                        interactions, providing a more natural and accessible way for users to engage with technology.
+                    </p>
+                </div>
+                
+                <div class="key-highlights">
+                    <h3>Key Features</h3>
+                    <ul>
+                        <li>Facial Expression Recognition to detect emotions</li>
+                        <li>Hand Gesture Interpretation to understand intent</li>
+                        <li>Eye Movement Tracking to enhance mood detection</li>
+                        <li>Dual Response Mode: Voice or Text-based replies</li>
+                    </ul>
+                </div>
+
+                <div class="mission-statement">
+                    <p>
+                        At Signify.AI, we believe that communication is a right, not a privilege. Our mission is to 
+                        empower individuals with hearing and speech impairments by offering them a compassionate, 
+                        AI-powered companion that listens, understands, and responds—just like a human would.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="chat" class="chat-section">
+        <div class="container">
+            <h2>Chat Now</h2>
+            <div class="chat-interface">
+                <div class="chat-tabs">
+                    <button class="tab-button active" data-tab="video-to-text">
+                        <i class="fas fa-video"></i>
+                        Video to Text
+                    </button>
+                    <button class="tab-button" data-tab="text-to-text">
+                        <i class="fas fa-comments"></i>
+                        Text to Text
+                    </button>
+                    <button class="tab-button" data-tab="audio-to-text">
+                        <i class="fas fa-microphone"></i>
+                        Audio to Text
+                    </button>
+                    <button class="tab-button" data-tab="text-to-audio">
+                        <i class="fas fa-volume-up"></i>
+                        Text to Audio
+                    </button>
+                    <button class="tab-button" data-tab="audio-to-audio">
+                        <i class="fas fa-headphones"></i>
+                        Audio to Audio
+                    </button>
+                </div>
+                <div class="chat-content">
+                    <div class="tab-content active" id="video-to-text">
+                        <div class="interactive-interface">
+                            <div class="camera-feed" id="camera-feed">
+                                <div class="camera-placeholder">
+                                    <i class="fas fa-camera"></i>
+                                    <p>Click the camera button below to start your webcam</p>
+                                </div>
+                            </div>
+                            <div class="transcription-box">
+                                <div class="transcription-header">
+                                    <i class="fas fa-closed-captioning"></i>
+                                    <span>Live Transcription</span>
+                                </div>
+                                <div class="transcription-content">
+                                    <p class="typing-animation">Detecting gestures...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="text-to-text">
+                        <div class="interactive-interface">
+                            <div class="chat-window">
+                                <div class="chat-messages">
+                                    <div class="message typing">
+                                        <div class="message-content">
+                                            <div class="typing-indicator">
+                                                <span></span>
+                                                <span></span>
+                                                <span></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-input">
+                                    <input type="text" placeholder="Type your message...">
+                                    <button class="send-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="audio-to-text">
+                        <div class="interactive-interface">
+                            <div class="audio-visualizer">
+                                <div class="visualizer-bars">
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                    <div class="bar"></div>
+                                </div>
+                                <div class="mic-button">
+                                    <i class="fas fa-microphone"></i>
+                                </div>
+                            </div>
+                            <div class="transcription-box">
+                                <div class="transcription-header">
+                                    <i class="fas fa-microphone-alt"></i>
+                                    <span>Voice to Text</span>
+                                </div>
+                                <div class="transcription-content">
+                                    <p class="typing-animation">Listening...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="text-to-audio">
+                        <div class="interactive-interface">
+                            <div class="text-input-area">
+                                <textarea placeholder="Type text to convert to speech..."></textarea>
+                                <div class="voice-controls">
+                                    <button class="voice-btn">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <div class="voice-settings">
+                                        <select class="voice-select">
+                                            <option value="male">Male Voice</option>
+                                            <option value="female">Female Voice</option>
+                                        </select>
+                                        <input type="range" class="speed-control" min="0.5" max="2" step="0.1" value="1">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="audio-waveform">
+                                <div class="wave"></div>
+                                <div class="wave"></div>
+                                <div class="wave"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="audio-to-audio">
+                        <div class="interactive-interface">
+                            <div class="audio-conversation">
+                                <div class="conversation-participants">
+                                    <div class="participant">
+                                        <div class="participant-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="audio-indicator">
+                                            <div class="wave"></div>
+                                            <div class="wave"></div>
+                                            <div class="wave"></div>
+                                        </div>
+                                    </div>
+                                    <div class="participant">
+                                        <div class="participant-avatar">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div class="audio-indicator">
+                                            <div class="wave"></div>
+                                            <div class="wave"></div>
+                                            <div class="wave"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="conversation-controls">
+                                    <button class="control-btn">
+                                        <i class="fas fa-microphone"></i>
+                                    </button>
+                                    <button class="control-btn">
+                                        <i class="fas fa-volume-up"></i>
+                                    </button>
+                                    <button class="control-btn">
+                                        <i class="fas fa-phone"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="use-cases" class="use-cases-section">
+        <div class="container">
+            <h2>Use Cases</h2>
+            <div class="use-cases-content">
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Education</h3>
+                    <p>Help students with hearing impairments participate fully in classroom discussions</p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h3>Workplace</h3>
+                    <p>Facilitate communication in professional environments</p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-home"></i>
+                    </div>
+                    <h3>Home</h3>
+                    <p>Improve daily interactions with family members</p>
+                </div>
+                
+                <div class="use-case-card">
+                    <div class="use-case-icon">
+                        <i class="fas fa-hospital"></i>
+                    </div>
+                    <h3>Healthcare</h3>
+                    <p>Assist in medical consultations and appointments</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-content">
+                <div class="contact-image">
+                    <img src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1172&q=80" alt="Contact Us - Modern workspace with laptop and phone">
+                </div>
+                <div class="contact-form">
+                    <p>Contact information coming soon</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <div class="logo-placeholder"></div>
+                    <span class="brand-name">Signify<span>.AI</span></span>
+                </div>
+                <div class="footer-links">
+                    <a href="#home">Home</a>
+                    <a href="#chat">Chat Now</a>
+                    <a href="#about">About Us</a>
+                    <a href="#use-cases">Use Cases</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.facebook.com/signify.ai" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/signify_ai" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>
+                    <a href="https://www.instagram.com/signify.ai" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                    <a href="https://www.linkedin.com/in/harshit-jaipuria/" class="social-icon" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 Signify.AI. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <script src="webcam.js"></script>
+    <script>
+        // Account button hover effect
+        const accountBtn = document.getElementById('accountBtn');
+        
+        accountBtn.addEventListener('mouseenter', () => {
+            accountBtn.classList.add('active');
+        });
+        
+        accountBtn.addEventListener('mouseleave', () => {
+            accountBtn.classList.remove('active');
+        });
+        
+        // Statistics Counter Animation
+        function animateCounter(element) {
+            const target = parseInt(element.getAttribute('data-target'));
+            const duration = 2000; // 2 seconds
+            const step = target / (duration / 16); // 60fps
+            let current = 0;
+            
+            const updateCounter = () => {
+                current += step;
+                if (current < target) {
+                    element.textContent = Math.floor(current);
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    element.textContent = target;
+                }
+            };
+            
+            updateCounter();
+        }
+        
+        // Intersection Observer for Statistics
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(counter => {
+                        animateCounter(counter);
+                    });
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        // Observe the stats section
+        const statsSection = document.querySelector('.stats-section');
+        if (statsSection) {
+            observer.observe(statsSection);
+        }
+    </script>
+</body>
+</html> 
